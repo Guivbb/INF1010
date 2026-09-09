@@ -96,7 +96,7 @@ int main(void) {
     arquivo = fopen("chaves.txt", "r");
 
     if (arquivo == NULL) {
-        printf("Erro ao abrir o arquivo entrada.txt\n");
+        printf("Erro ao abrir o arquivo chaves.txt\n");
         return 1;
     }
 
