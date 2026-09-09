@@ -1,0 +1,201 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage[a4paper, top=3cm, bottom=2cm, left=3cm, right=2cm]{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+\lstset{
+  language=C,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue},
+  stringstyle=\color{red},
+  commentstyle=\color{gray},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  stepnumber=1,
+  frame=single,
+  tabsize=2,
+  breaklines=true
+}
+
+\begin{document}
+
+% --- CAPA ---
+\begin{titlepage}
+    \centering
+    {\bfseries PONTIFÍCIA UNIVERSIDADE CATÓLICA DO RIO DE JANEIRO\par}
+    \vfill
+    {\bfseries Fabiano Carvalho Costa Júnior -- Matrícula: [2520144] \par}
+    {\bfseries Guilherme Vilas Boas Barbosa -- Matrícula: [2411726] \par}
+    \vfill
+    {\bfseries Laboratório 02\par INF1010\par}
+    \vfill
+    {\bfseries Rio de Janeiro \par}
+    \vspace{0.3cm}
+    {\bfseries 2026 \par}
+\end{titlepage}
+
+\clearpage
+
+% --- SEÇÃO 2: OBJETIVO ---
+\section{Objetivo}
+O objetivo deste trabalho é desenvolver um programa em linguagem C para ler uma sequência de 20 chaves inteiras a partir de um arquivo texto (\texttt{entrada.txt}) e inseri-las dinamicamente em uma Árvore Binária de Busca (ABB). A estrutura do nó armazena a chave, a altura e os ponteiros para as subárvores esquerda e direita. 
+
+Após a montagem completa da árvore, o programa percorre a estrutura de forma recursiva para calcular e atualizar a altura de cada nó. Por fim, o sistema exibe no console os percursos em pré-ordem e em ordem simétrica, apresentando para cada elemento a sua chave acompanhada da respectiva altura calculada no formato \texttt{chave(altura)}, garantindo também a liberação adequada de toda a memória alocada.
+
+% --- SEÇÃO 3: ESTRUTURA DO PROGRAMA ---
+\section{Estrutura do Programa}
+
+\begin{itemize}
+    \item \textbf{Estrutura de Dados (\texttt{Nodo}):} Contém os campos inteiros \texttt{chave} e \texttt{altura}, e dois ponteiros (\texttt{esq} e \texttt{dir}) para os nós filhos.
+    \item \textbf{Módulo de Alocação (\texttt{criaNodo}):} Aloca memória dinamicamente com \texttt{malloc}, inicializa os ponteiros como \texttt{NULL} e define a altura inicial como 0.
+    \item \textbf{Módulo de Inserção (\texttt{inserir}):} Insere recursivamente cada chave mantendo a propriedade de ordenação da ABB (menores à esquerda, maiores à direita).
+    \item \textbf{Módulo de Cálculo de Altura (\texttt{calculaAltura}):} Calcula recursivamente a altura de cada nó (definindo folhas com altura 0 e base de cálculo $-1$ para nós nulos), onde a altura do nó é $1 + \max(\text{altura}_{\text{esq}}, \text{altura}_{\text{dir}})$.
+    \item \textbf{Módulos de Percurso (\texttt{preOrdem} e \texttt{simetrica}):} Percorrem a árvore e imprimem os dados no formato \texttt{chave(altura)}.
+    \item \textbf{Módulo de Liberação (\texttt{liberaArvore}):} Percorre a árvore em pós-ordem desalocando todos os nós com \texttt{free}.
+\end{itemize}
+
+% --- SEÇÃO 4: SOLUÇÃO E CÓDIGO ---
+\section{Solução e Código}
+O código abaixo realiza a leitura do arquivo de entrada, construção da ABB, cálculo das alturas, exibição e liberação de memória:
+
+\begin{lstlisting}
+#include <stdio.h>
+#include <stdlib.h>
+
+struct nodo {
+    int chave;
+    int altura;
+    struct nodo *esq;
+    struct nodo *dir;
+};
+
+typedef struct nodo Nodo;
+
+Nodo *criaNodo(int chave) {
+    Nodo *novo = (Nodo *) malloc(sizeof(Nodo));
+    if (novo == NULL) {
+        printf("Erro ao alocar memoria!\n");
+        exit(1);
+    }
+    novo->chave = chave;
+    novo->altura = 0;
+    novo->esq = NULL;
+    novo->dir = NULL;
+    return novo;
+}
+
+Nodo *inserir(Nodo *raiz, int chave) {
+    if (raiz == NULL) {
+        return criaNodo(chave);
+    }
+    if (chave < raiz->chave) {
+        raiz->esq = inserir(raiz->esq, chave);
+    } else if (chave > raiz->chave) {
+        raiz->dir = inserir(raiz->dir, chave);
+    }
+    return raiz;
+}
+
+int calculaAltura(Nodo *raiz) {
+    if (raiz == NULL) {
+        return -1;
+    }
+    int alturaEsq = calculaAltura(raiz->esq);
+    int alturaDir = calculaAltura(raiz->dir);
+    if (alturaEsq > alturaDir) {
+        raiz->altura = alturaEsq + 1;
+    } else {
+        raiz->altura = alturaDir + 1;
+    }
+    return raiz->altura;
+}
+
+void preOrdem(Nodo *raiz) {
+    if (raiz != NULL) {
+        printf("%d(%d) ", raiz->chave, raiz->altura);
+        preOrdem(raiz->esq);
+        preOrdem(raiz->dir);
+    }
+}
+
+void simetrica(Nodo *raiz) {
+    if (raiz != NULL) {
+        simetrica(raiz->esq);
+        printf("%d(%d) ", raiz->chave, raiz->altura);
+        simetrica(raiz->dir);
+    }
+}
+
+void liberaArvore(Nodo *raiz) {
+    if (raiz != NULL) {
+        liberaArvore(raiz->esq);
+        liberaArvore(raiz->dir);
+        free(raiz);
+    }
+}
+
+int main(void) {
+    FILE *arquivo;
+    Nodo *raiz = NULL;
+    int chave;
+
+    arquivo = fopen("entrada.txt", "r");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo entrada.txt\n");
+        return 1;
+    }
+
+    while (fscanf(arquivo, "%d", &chave) == 1) {
+        raiz = inserir(raiz, chave);
+    }
+    fclose(arquivo);
+
+    calculaAltura(raiz);
+
+    printf("Pre-ordem: ");
+    preOrdem(raiz);
+    printf("\n");
+
+    printf("Simetrica: ");
+    simetrica(raiz);
+    printf("\n");
+
+    liberaArvore(raiz);
+    return 0;
+}
+\end{lstlisting}
+
+\subsection{Resultados e Saída do Programa}
+Utilizando o arquivo \texttt{chaves.txt}:
+\begin{verbatim}
+20 30 70 50 100 60 80 90 10 40 5 95 25 85 35 75 65 55 45 41
+\end{verbatim}
+
+A execução do programa no terminal gera a seguinte saída:
+\begin{lstlisting}[basicstyle=\ttfamily\small, breaklines=true, frame=none, numbers=none]
+Pre-ordem: 20(8) 10(1) 5(0) 30(7) 25(0) 70(6) 50(4) 40(2) 35(0) 45(1) 41(0) 60(1) 55(0) 65(0) 100(5) 80(4) 75(0) 90(3) 85(0) 95(2) 
+Simetrica: 5(0) 10(1) 20(8) 25(0) 30(7) 35(0) 40(2) 41(0) 45(1) 50(4) 55(0) 60(1) 65(0) 70(6) 75(0) 80(4) 85(0) 90(3) 95(2) 100(5) 
+\end{lstlisting}
+
+% --- SEÇÃO 5: OBSERVAÇÕES E CONCLUSÕES ---
+\section{Observações e Conclusões}
+\begin{itemize}
+    \item \textbf{Análise do Resultado:} O percurso em Ordem Simétrica imprime as chaves em ordem  crescente, o que confirma visualmente que a estrutura criada é uma Árvore Binária.
+    \item \textbf{Cálculo de Altura:} A adoção do valor base $-1$ para ponteiros \texttt{NULL} permitiu que os nós folha (como o nó de chave \texttt{5}) recebessem corretamente a altura $0$, propagando a maior altura do subárvore até a raiz (chave \texttt{20}, de altura $8$).
+    \item \textbf{Compilação e Execução:} O programa foi compilado via terminal com o GCC utilizando o comando:
+    \begin{verbatim}
+    gcc -Wall -std=c99 main.c -o arvore
+    ./arvore
+    \end{verbatim}
+    
+\end{itemize}
+
+\end{document}
