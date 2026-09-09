@@ -1,77 +1,61 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct nodo {
+struct no {
     int chave;
     int altura;
-    struct nodo *esq;
-    struct nodo *dir;
+    struct no *esq;
+    struct no *dir;
 };
 
-typedef struct nodo Nodo;
-
-
-/* Cria um novo nó */
-Nodo *criaNodo(int chave) {
-    Nodo *novo = (Nodo *) malloc(sizeof(Nodo));
-
+typedef struct no No;
+No *criaNo(int chave) {
+    No *novo = (No *) malloc(sizeof(No));
     if (novo == NULL) {
         printf("Erro ao alocar memoria!\n");
         exit(1);
     }
-
     novo->chave = chave;
     novo->altura = 0;
     novo->esq = NULL;
     novo->dir = NULL;
-
     return novo;
 }
 
 
-/* Insere uma chave na árvore binária de busca */
-Nodo *inserir(Nodo *raiz, int chave) {
-
+No *insere(No *raiz, int chave) {
     if (raiz == NULL) {
-        return criaNodo(chave);
+        return criaNo(chave);
     }
-
     if (chave < raiz->chave) {
-        raiz->esq = inserir(raiz->esq, chave);
+        raiz->esq = insere(raiz->esq, chave);
     }
     else if (chave > raiz->chave) {
-        raiz->dir = inserir(raiz->dir, chave);
+        raiz->dir = insere(raiz->dir, chave);
     }
-
     return raiz;
 }
 
-
-/* Calcula e armazena a altura de cada nó */
-int calculaAltura(Nodo *raiz) {
+int calculaAltura(No *raiz) {
 
     if (raiz == NULL) {
         return -1;
     }
 
-    int alturaEsq = calculaAltura(raiz->esq);
-    int alturaDir = calculaAltura(raiz->dir);
+    int alturaE = calculaAltura(raiz->esq);
+    int alturaD = calculaAltura(raiz->dir);
 
-    if (alturaEsq > alturaDir) {
-        raiz->altura = alturaEsq + 1;
+    if (alturaE > alturaD) {
+        raiz->altura = alturaE + 1;
     }
     else {
-        raiz->altura = alturaDir + 1;
+        raiz->altura = alturaD + 1;
     }
 
     return raiz->altura;
 }
 
-
-/* Percurso em pré-ordem:
-   raiz -> esquerda -> direita
-*/
-void preOrdem(Nodo *raiz) {
+void preOrdem(No *raiz) {
 
     if (raiz != NULL) {
         printf("%d(%d) ", raiz->chave, raiz->altura);
@@ -81,11 +65,7 @@ void preOrdem(Nodo *raiz) {
     }
 }
 
-
-/* Percurso em ordem simétrica:
-   esquerda -> raiz -> direita
-*/
-void simetrica(Nodo *raiz) {
+void simetrica(No *raiz) {
 
     if (raiz != NULL) {
         simetrica(raiz->esq);
@@ -96,9 +76,7 @@ void simetrica(Nodo *raiz) {
     }
 }
 
-
-/* Libera a memória da árvore */
-void liberaArvore(Nodo *raiz) {
+void liberaArvore(No *raiz) {
 
     if (raiz != NULL) {
         liberaArvore(raiz->esq);
@@ -112,37 +90,30 @@ void liberaArvore(Nodo *raiz) {
 int main(void) {
 
     FILE *arquivo;
-    Nodo *raiz = NULL;
+    No *raiz = NULL;
     int chave;
 
-    arquivo = fopen("entrada.txt", "r");
+    arquivo = fopen("chaves.txt", "r");
 
     if (arquivo == NULL) {
         printf("Erro ao abrir o arquivo entrada.txt\n");
         return 1;
     }
 
-    /* Lê todas as chaves do arquivo */
     while (fscanf(arquivo, "%d", &chave) == 1) {
-        raiz = inserir(raiz, chave);
+        raiz = insere(raiz, chave);
     }
 
     fclose(arquivo);
 
-    /* Calcula a altura de cada nó */
-    calculaAltura(raiz);
 
+    calculaAltura(raiz);
     printf("Pre-ordem: ");
     preOrdem(raiz);
-
     printf("\n");
-
     printf("Simetrica: ");
     simetrica(raiz);
-
     printf("\n");
-
     liberaArvore(raiz);
-
     return 0;
 }
