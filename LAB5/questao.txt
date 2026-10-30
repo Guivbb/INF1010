@@ -1,0 +1,21 @@
+Estruturas de Dados – LAB sobre Tabelas Hash – 2026_2
+Implementar algoritmos de busca, inclusão e exclusão em vetor de X posições, usando hashing com tratamento de colisões,
+ para armazenar 1.000 placas de automóveis no formato “CCCNNNN” onde C é um caractere maiúsculo e N um numeral. 
+ A rotina de tratamento de colisão deve armazenar a nova placa no próprio vetor (endereçamento interno). 
+ Não devem ser usadas outras estruturas de dados.
+
+A função hash deve ser definida individualmente e as colisões devem ser tratadas por endereçamento aberto com tentativa linear,
+ quadrática ou dispersão dupla.
+Elaborar programa contendo a implementação dos algoritmos de inserção, exclusão e busca, em linguagem C.
+Os algoritmos devem prever uma entrada de dados via arquivo texto contendo placas de automóveis geradas aleatoriamente 
+(em cada linha do arquivo texto deverá vir uma placa seguida pelos caracteres CR e LF). 
+O programa deve prever ainda a geração de um relatório indicando o total de colisões geradas
+e os tempos de inclusão de elementos do vetor (a busca deve ser feita após o término da inclusão de todas as placas).
+Deverá ser entregue ainda um relatório contendo o pseudocódigo dos algoritmos utilizados, os programas fonte, 
+os tempos tomados para cada algoritmo e a geração do gráfico de tamanho da entrada X tempo de execução 
+e tamanho da entrada x número de colisões, para diferentes valores de entrada por exemplo: 
+64, 128, 256, 512 e 1000 placas (complexidade prática).
+Todos os aspectos considerados deverão ser avaliados. 
+A avaliação vai ser feita em um mesmo equipamento para todos os grupos. 
+A maior nota caberá ao grupo que fizer o trabalho completo, com menor número de colisões e menor tempo de execução dos algoritmos. 
+Para a avaliação o professor fornecerá um arquivo de placas geradas aleatoriamente para servir de comparação entre os trabalhos.
