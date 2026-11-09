@@ -1,113 +1,121 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
 #define MAX 4
 #define MIN 2
 
 typedef struct no t_no;
-
 struct no {
+    char nome;
     int ndesc;
-    int chave[MAX];
+    int chave[MAX + 1];
     t_no *ramo[MAX + 1];
     t_no *prox;
 };
 
-t_no *cria_no(int n) {
+t_no *cria_no(char nome, int n) {
     t_no *p = malloc(sizeof(t_no));
     int i;
-
     if (p == NULL) {
         printf("Erro ao alocar memoria\n");
         exit(1);
     }
+    p->nome = nome;
     p->ndesc = n;
     p->prox = NULL;
-    for (i = 0; i < MAX + 1; i++)
+    for (i = 0; i < MAX + 1; i++) {
+        p->chave[i] = -1;
         p->ramo[i] = NULL;
+    }
     return p;
 }
 
-int main() {
+void imprime_no(t_no *p) {
     int i;
-    t_no *p;
-    t_no *f1 = cria_no(2);
-    f1->chave[0] = 10;
-    f1->chave[1] = 40;
-
-    t_no *f2 = cria_no(3);
-    f2->chave[0] = 50;
-    f2->chave[1] = 60;
-    f2->chave[2] = 70;
-
-    t_no *f3 = cria_no(3);
-    f3->chave[0] = 75;
-    f3->chave[1] = 80;
-    f3->chave[2] = 90;
-
-    t_no *f4 = cria_no(3);
-    f4->chave[0] = 100;
-    f4->chave[1] = 110;
-    f4->chave[2] = 115;
-
-    t_no *f5 = cria_no(4);
-    f5->chave[0] = 120;
-    f5->chave[1] = 135;
-    f5->chave[2] = 140;
-    f5->chave[3] = 170;
-
-    t_no *f6 = cria_no(4);
-    f6->chave[0] = 200;
-    f6->chave[1] = 230;
-    f6->chave[2] = 240;
-    f6->chave[3] = 250;
-
-    f1->prox = f2;
-    f2->prox = f3;
-    f3->prox = f4;
-    f4->prox = f5;
-    f5->prox = f6;
-
-    t_no *esq = cria_no(2);
-    esq->chave[0] = 50;
-    esq->chave[1] = 75;
-
-    esq->ramo[0] = f1;
-    esq->ramo[1] = f2;
-    esq->ramo[2] = f3;
-
-    t_no *dir = cria_no(2);
-    dir->chave[0] = 120;
-    dir->chave[1] = 200;
-
-    dir->ramo[0] = f4;
-    dir->ramo[1] = f5;
-    dir->ramo[2] = f6;
-
-    t_no *arv = cria_no(1);
-    arv->chave[0] = 100;
-    arv->ramo[0] = esq;
-    arv->ramo[1] = dir;
-    p = f1;
-
-    while (p != NULL) {
-        for (i = 0; i < p->ndesc; i++)
-            printf("%d ", p->chave[i]);
-        p = p->prox;
+    printf("%-5c | ", p->nome);
+    for (i = 0; i < MAX + 1; i++) {
+        if (p->ramo[i] == NULL)
+            printf("%-5s ", "NULL");
+        else
+            printf("%-5c ", p->ramo[i]->nome);
     }
-
+    printf("| ");
+    for (i = 0; i < MAX + 1; i++) {
+        printf("%d", p->chave[i]);
+        if (i < MAX)
+            printf(", ");
+    }
     printf("\n");
+}
 
-    free(arv);
-    free(esq);
-    free(dir);
-    free(f1);
-    free(f2);
-    free(f3);
-    free(f4);
-    free(f5);
-    free(f6);
+int main() {
+    t_no *a = cria_no('a', 2);
+    a->chave[0] = 10;
+    a->chave[1] = 40;
 
+    t_no *b = cria_no('b', 3);
+    b->chave[0] = 50;
+    b->chave[1] = 60;
+    b->chave[2] = 70;
+
+    t_no *c = cria_no('c', 3);
+    c->chave[0] = 75;
+    c->chave[1] = 80;
+    c->chave[2] = 90;
+
+    t_no *d = cria_no('d', 3);
+    d->chave[0] = 100;
+    d->chave[1] = 110;
+    d->chave[2] = 115;
+
+    t_no *e = cria_no('e', 4);
+    e->chave[0] = 120;
+    e->chave[1] = 135;
+    e->chave[2] = 140;
+    e->chave[3] = 170;
+
+    t_no *f = cria_no('f', 4);
+    f->chave[0] = 200;
+    f->chave[1] = 230;
+    f->chave[2] = 240;
+    f->chave[3] = 250;
+
+    a->prox = b;
+    b->prox = c;
+    c->prox = d;
+    d->prox = e;
+    e->prox = f;
+
+    t_no *x = cria_no('x', 2);
+    x->chave[0] = 50;
+    x->chave[1] = 75;
+
+    x->ramo[0] = a;
+    x->ramo[1] = b;
+    x->ramo[2] = c;
+
+    t_no *y = cria_no('y', 2);
+    y->chave[0] = 120;
+    y->chave[1] = 200;
+    y->ramo[0] = d;
+    y->ramo[1] = e;
+    y->ramo[2] = f;
+
+    t_no *arv = cria_no('r', 1);
+    arv->chave[0] = 100;
+    arv->ramo[0] = x;
+    arv->ramo[1] = y;
+
+    printf("Endereco | Ponteiros                      | Chaves\n");
+    printf("------------------------------------------------------------\n");
+    imprime_no(arv);
+    imprime_no(x);
+    imprime_no(y);
+    imprime_no(a);
+    imprime_no(b);
+    imprime_no(c);
+    imprime_no(d);
+    imprime_no(e);
+    imprime_no(f);
     return 0;
 }
